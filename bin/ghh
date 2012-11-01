@@ -1,0 +1,126 @@
+#!/usr/bin/env ruby
+require 'github_helper'
+require 'github_helper/first_time'
+require 'optparse'
+
+# Basic class to know that we have an error with the arguments
+class ArgException < Exception
+end
+
+options = {}
+action = false
+
+optparse = OptionParser.new do|opts|
+
+# Set the banner
+opts.banner = "GitHelper #{GithubHelper::VERSION} - Easy & fast commandline pull-request - Tristan Foureur (2012)\nUsage : ghh\nList of options:"
+
+# Define the options
+options[:fastmode] = false
+opts.on( '-f', '--fast', 'Fast mode : push to origin & pull-request' ) do
+  options[:fastmode] = true
+  action = true
+end
+
+options[:createpull] = false
+opts.on( '-r', '--request', 'Creates a pull request' ) do
+  options[:createpull] = true
+  action = true;
+end
+
+options[:commit] = false
+opts.on( '-c', '--commit', 'Commit staged changes' ) do
+  options[:commit] = true
+  action = true;
+end
+
+options[:commitmessage] = false
+opts.on( '-m', '--message [message]', 'Your commit message' ) do |m|
+  options[:commitmessage] = m
+end
+
+ options[:issueid] = false
+ opts.on( '-i', '--id [id]', 'Issue ID' ) do |i|
+   options[:issueid] = i
+ end
+
+ options[:regenconfig] = false
+ opts.on( nil, '--reset-config', 'Resets your YML config file and enter your data again.' ) do
+   options[:regenconfig] = true
+ end
+
+ options[:listpulls] = false
+ opts.on( '-l', '--pulls', 'Lists the open pull requests' ) do
+   options[:listpulls] = true
+   action = true;
+ end
+
+ options[:pulltitle] = false
+ opts.on( '-t', '--title [TITLE]', 'Pull request title. (Defaults to latest commit)' ) do |f|
+   options[:pulltitle] = f
+ end
+
+
+ options[:pullbody] = ''
+ opts.on( '-d', '--description [BODY]', 'Pull request description. (Defaults to an empty string)' ) do |b|
+   options[:pullbody] = b
+ end
+
+ options[:base] = "master"
+ opts.on( '-b', '--base [master]', 'Pull request base. (Defaults to master)' ) do |b|
+   options[:base] = b
+ end
+
+ options[:push] = false
+ opts.on( '-p', '--push', 'Push branch to remote before doing the pullrequest(To username/currentbranch)' ) do |p|
+   options[:push] = p
+   action = true;
+ end
+
+ options[:head] = false
+ opts.on( '-n', '--head [head]', 'Pull request head (Defaults to current branch)' ) do |h|
+   options[:head] = h
+ end
+
+ options[:verbose] = false
+ opts.on( '-v', '--verbose', 'Enables verbose mode' ) do
+   options[:verbose] = true
+ end
+
+ # This displays the help screen, all programs are
+ # assumed to have this option.
+ opts.on( '-h', '--help', 'Displays this screen' ) do
+   action = true;
+   puts opts
+ end
+
+ options[:help] = opts
+end
+
+begin
+  optparse.parse!
+
+  # Do we have a config file ? If we don't, lets make one !
+  f = GithubHelper::FirstTime.new() if !File.exists?('.git/githelper.config.yml') || options[:regenconfig]
+
+  raise ArgException, "No action specified" if !action
+  raise ArgException, "Your commit needs a message" if (options[:commit]) && !options[:commitmessage]
+
+  GH = GithubHelper::Github.new(options)
+
+  GH.displaypulls! if options[:listpulls]
+  GH.commit! if (options[:fastmode] || options[:commit])  && options[:commitmessage]
+  GH.pushBranch! if options[:push] || options[:fastmode]
+  GH.createPull! if options[:createpull] || options[:fastmode]
+
+# Initialization exceptions management
+rescue OptionParser::InvalidOption,ArgException => e
+  puts e.message
+  puts options[:help]
+  puts e.backtrace if options[:verbose]
+
+# Run-time exceptions management
+rescue Exception => e
+  puts e.message
+  puts e.backtrace if options[:verbose]
+end
