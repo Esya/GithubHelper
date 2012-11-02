@@ -45,7 +45,7 @@ class GithubHelper::FirstTime
     @config['remote']['repo'] = ask("What's the user's repo ?")
 
     puts "Writing to config file : .git/githelper.config.yml"
-    header = "# GitHelper.rb config file\n# You can edit your credentials here\n"
+    header = "# GithubHelper config file\n# You can edit your configuration here\n"
     yaml = @config.to_yaml
 
     output = header + yaml
