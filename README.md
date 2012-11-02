@@ -23,10 +23,17 @@ Just install the gem using :
 
     gem install github_helper
 
+## Configuration
+The first time you run a `ghh` command in your git repository, a prompt will ask you your credentials (**But won't store** your password, only the OAuth token) and your target user/repo.
+
+It will then save the configuration in `.git/githelper.config.yml`  
+
 ## Usage
+The **"fast mode"** just needs the `-f` option. It will take your latest commit message and use it as the Pull request's title. Optionnaly, you can use `-fm [message]` to commit/push/open the PR. 
+
 To add an issue ID to the Pull request's description, just use the `-i` option.
 
-To get some help, just run `ghh -h`
+To get some more help, just run `ghh -h`
 
 Here are the detailed options :
 
@@ -45,3 +52,8 @@ Here are the detailed options :
     -v, --verbose                    Enables verbose mode
     -h, --help                       Displays this screen
 
+### ToDo list
+* More documentation
+* A commit-amending feature ?
+* A better error handling
+* Share a single token over multiple repos
