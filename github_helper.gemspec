@@ -12,6 +12,8 @@ Gem::Specification.new do |gem|
   gem.summary       = %q{A useful tool to commit, push to remote and open a pull request, in a single line.}
   gem.homepage      = "https://github.com/Esya/GithubHelper"
 
+  gem.post_install_message = "GithubHelper is ready!\nJust type ghh in your terminal in a git folder to start using it."
+
   gem.files         = `git ls-files`.split($/)
   gem.executables   << 'ghh'
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
