@@ -1,12 +1,18 @@
+require 'io/console'
+
 # First time run ? Let's make the config file !
 class GithubHelper::FirstTime
   include HTTParty
   base_uri 'https://api.github.com'
 
   # Outputs the string as a question then waits for the user input
-  def ask(string,default=nil)
+  def ask(string,hidden=false,default=nil)
     puts string
-    input = gets.strip
+    if hidden
+      input = STDIN.noecho {|i| i.gets}.chomp
+     else
+      input = gets.strip
+    end
     puts ""
     input = (input == "") ? default : input
   end
@@ -34,7 +40,7 @@ class GithubHelper::FirstTime
   def fillArray!
     puts "Setting your credentials"
     user = ask("What's your github user name (Won't work with your email) ?")
-    password = ask("What's your git password ?\n(This won't be logged, used to get an OAuth token)")
+    password = ask("What's your git password ?\n(This won't be logged, used to get an OAuth token)",true)
     self.class.basic_auth user, password
 
     @config['credentials']['user'] = user
