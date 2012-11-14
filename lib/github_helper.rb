@@ -147,7 +147,7 @@ module GithubHelper
     def lastCommit?
       message = ''
       @Git.log(1).author(@@my_name).each { |c| message = c.message }
-      message
+      message.split("\n")[0]
     end
 
     # Return your current branch's name
