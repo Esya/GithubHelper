@@ -102,7 +102,7 @@ module GithubHelper
         message = options[:commitmessage]
 
         ci = @Git.commit(message)
-        pp ci
+        pp ci if @verbose
       else
         raise Exception, "Commit needs a message"
       end
