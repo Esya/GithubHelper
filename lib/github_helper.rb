@@ -25,7 +25,7 @@ module GithubHelper
       pulls = get("/repos/#{@@target_user}/#{@@target_repo}/pulls")
       pp pulls if @verbose
       checkHeaders(pulls)
-      pulls.each { |pull| print "*\t"+pull['title'] + "\t" + pull['user']['login'] + "\n" } 
+      pulls.each { |pull| print "*\t#{pull['number']}\t"+pull['title'] + "\t" + pull['user']['login'] + "\n" } 
     end
 
     def initialize(options)
