@@ -100,7 +100,11 @@ end
 begin
   optparse.parse!
 
+  topFolder = `git rev-parse --show-toplevel`.chomp!
+  raise ArgException, "This isn't a git directory" if topFolder == nil
+
   # Do we have a config file ? If we don't, lets make one !
+  Dir.chdir(topFolder)
   f = GithubHelper::FirstTime.new() if !File.exists?('.git/githelper.config.yml') || options[:regenconfig]
 
   raise ArgException, "No action specified" if !action
